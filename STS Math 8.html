@@ -804,16 +804,16 @@ const QUIZZES = {
     { q: 'If orbital radius triples, orbital period multiplies by approximately:', opts: ['3', '5.2', '9', '27'], ans: 1 }
   ],
   "cube-roots": [
-    { q: "∛27 =", choices: ["3", "9", "27"], correct: 0 },
-    { q: "∛(-8) =", choices: ["undefined", "-2", "2"], correct: 1 },
-    { q: "Solve x³ = 125", choices: ["x = 5", "x = 25", "x = 125"], correct: 0 },
-    { q: "Volume of cube = 343 ft³. Side =", choices: ["7 ft", "17 ft", "49 ft"], correct: 0 }
+    { q: "∛27 =", opts: ["3", "9", "27"], ans: 0 },
+    { q: "∛(-8) =", opts: ["undefined", "-2", "2"], ans: 1 },
+    { q: "Solve x³ = 125", opts: ["x = 5", "x = 25", "x = 125"], ans: 0 },
+    { q: "Volume of cube = 343 ft³. Side =", opts: ["7 ft", "17 ft", "49 ft"], ans: 0 }
   ],
   "congruence-similarity": [
-    { q: "Rigid motions are:", choices: ["translations, rotations, dilations", "translations, rotations, reflections", "reflections only"], correct: 1 },
-    { q: "Similar figures have:", choices: ["same size, same shape", "different shape", "same shape, possibly different size"], correct: 2 },
-    { q: "Two triangles with all corresponding angles equal are:", choices: ["congruent", "similar", "neither"], correct: 1 },
-    { q: "Scale factor that produces a smaller image:", choices: ["greater than 1", "less than 1", "exactly 1"], correct: 1 }
+    { q: "Rigid motions are:", opts: ["translations, rotations, dilations", "translations, rotations, reflections", "reflections only"], ans: 1 },
+    { q: "Similar figures have:", opts: ["same size, same shape", "different shape", "same shape, possibly different size"], ans: 2 },
+    { q: "Two triangles with all corresponding angles equal are:", opts: ["congruent", "similar", "neither"], ans: 1 },
+    { q: "Scale factor that produces a smaller image:", opts: ["greater than 1", "less than 1", "exactly 1"], ans: 1 }
   ]
 };
 
@@ -915,7 +915,13 @@ function showQuiz() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('quiz-screen').classList.add('active');
   const quiz = QUIZZES[currentUnit];
-  let html = '';
+  let html = `
+    <div style="background:#f0f4ff;padding:14px;border-radius:8px;margin-bottom:15px;border-left:4px solid #1B3A8A;">
+      <label style="display:block;font-weight:600;color:#1B3A8A;margin-bottom:6px;">Student Name:</label>
+      <input type="text" id="student-name" placeholder="Type your full name"
+        style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:14px;" />
+    </div>
+  `;
   quiz.forEach((q, idx) => {
     html += `<div class="quiz-question"><h4>Question ${idx + 1}</h4><p>${q.q}</p>`;
     if (q.opts) {
@@ -928,22 +934,97 @@ function showQuiz() {
   document.getElementById('quiz-content').innerHTML = html;
 }
 
+// Quiz results stored at the latest submission so the email button can use them.
+let lastQuizResults = null;
+
 function submitQuiz() {
   const quiz = QUIZZES[currentUnit];
+  const studentName = (document.getElementById('student-name')?.value || '').trim();
   let score = 0;
+  const breakdown = [];
   quiz.forEach((q, idx) => {
     if (q.opts) {
       const selected = document.querySelector(`input[name="q${idx}"]:checked`);
-      if (selected && parseInt(selected.value) === q.ans) score++;
+      const selectedIdx = selected ? parseInt(selected.value) : -1;
+      const isCorrect = selectedIdx === q.ans;
+      if (isCorrect) score++;
+      breakdown.push({
+        n: idx + 1,
+        question: q.q,
+        studentAnswer: selectedIdx >= 0 ? q.opts[selectedIdx] : '(no answer)',
+        correctAnswer: q.opts[q.ans],
+        correct: isCorrect
+      });
     }
   });
   const percent = Math.round((score / quiz.length) * 100);
   completedUnits[currentUnit] = true;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('certificate-screen').classList.add('active');
-  document.getElementById('cert-content').innerHTML = `<p style="font-size: 24px; margin: 20px;">Quiz Score: ${score}/${quiz.length} (${percent}%)</p><p>Congratulations on completing this unit!</p>`;
+
+  // Find unit title for display
+  const unitObj = UNITS.find(u => u.id === currentUnit);
+  const unitTitle = unitObj ? unitObj.title : currentUnit;
+
+  lastQuizResults = { studentName, unitTitle, score, total: quiz.length, pct: percent, breakdown };
+
+  const nameLine = studentName
+    ? `<p><strong>Student:</strong> ${studentName}</p>`
+    : `<p style="color:#b91c1c;"><em>Tip: type your name on the quiz screen before submitting so your teacher knows who you are.</em></p>`;
+
+  document.getElementById('cert-content').innerHTML = `
+    <div style="padding: 20px;">
+      ${nameLine}
+      <p><strong>Unit:</strong> ${unitTitle}</p>
+      <p style="font-size: 24px; margin: 20px 0;">Quiz Score: ${score}/${quiz.length} (${percent}%)</p>
+      <p>${percent === 100 ? "Perfect! 🌟" : percent >= 67 ? "Nice work! Keep practicing." : "Good try! Review the lesson and try again."}</p>
+      <div style="margin-top:18px;">
+        <button class="btn" onclick="emailResults()" style="background:#1B3A8A;color:white;padding:10px 18px;font-size:14px;border:none;border-radius:6px;cursor:pointer;">
+          📧 Send Results to Ms. Ramirez
+        </button>
+      </div>
+      <p style="margin-top:10px;font-size:12px;color:#666;">
+        Tapping the button opens Gmail with the score and answers filled in. Just press Send.
+      </p>
+    </div>
+  `;
   renderSidebar();
   updateProgress();
+}
+
+function emailResults() {
+  if (!lastQuizResults) return;
+  const r = lastQuizResults;
+  const lines = [];
+  lines.push(`Aloha Ms. Ramirez,`);
+  lines.push(``);
+  lines.push(`A 8th-grade math quiz was just submitted.`);
+  lines.push(``);
+  lines.push(`Student: ${r.studentName || '(name not provided)'}`);
+  lines.push(`Unit: ${r.unitTitle}`);
+  lines.push(`Score: ${r.score} out of ${r.total} (${r.pct}%)`);
+  lines.push(``);
+  lines.push(`--- Detailed Answers ---`);
+  r.breakdown.forEach(b => {
+    lines.push(``);
+    lines.push(`Q${b.n}. ${b.question}`);
+    lines.push(`   Student's answer: ${b.studentAnswer}`);
+    lines.push(`   Correct answer:   ${b.correctAnswer}`);
+    lines.push(`   ${b.correct ? '✓ Correct' : '✗ Incorrect'}`);
+  });
+  lines.push(``);
+  lines.push(`Mahalo,`);
+  lines.push(`Saint Theresa School — Grade 8 Math`);
+
+  const subject = `Grade 8 Math Quiz Result — ${r.studentName || 'Student'} — ${r.unitTitle} — ${r.pct}%`;
+  const body = lines.join('\n');
+  const to = 'lramirez@rcchawaii.org';
+
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1`
+    + `&to=${encodeURIComponent(to)}`
+    + `&su=${encodeURIComponent(subject)}`
+    + `&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl, '_blank');
 }
 
 function updateProgress() {
