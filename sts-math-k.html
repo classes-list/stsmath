@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saint Theresa School — Kindergarten Math Tutorial</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; color: #333; }
+    .container { display: flex; height: 100vh; }
+    .sidebar { border-right: 3px solid #FFD100;  width: 250px; background: #1a2a4a; color: white; overflow-y: auto; padding: 20px; }
+    .sidebar h2 { font-size: 14px; margin-bottom: 15px; font-weight: bold; }
+    .sidebar-item { padding: 10px; margin: 5px 0; background: #111d35; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    .sidebar-item:hover { background: #1B3A8A; }
+    .sidebar-item.active { background: #1B3A8A; }
+    .main { flex: 1; display: flex; flex-direction: column; }
+    .all-math-btn { background: #FFD100; color: #1a2a4a; border: none; cursor: pointer; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 6px; margin-right: 10px; text-decoration: none; display: inline-block; transition: all 0.18s; }
+    .all-math-btn:hover { background: #ffc400; transform: translateX(-2px); }
+    .home-btn { background: rgba(0,0,0,0.2); border: none; color: white; cursor: pointer; font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 6px; margin-right: 16px; }
+    .home-btn:hover { background: rgba(0,0,0,0.35); }
+    .topbar { border-bottom: 4px solid #FFD100;  background: #1B3A8A; color: white; padding: 15px 30px; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+    .topbar-right { display: flex; gap: 20px; align-items: center; font-size: 14px; }
+    .content { flex: 1; overflow-y: auto; padding: 30px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .units-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .unit-card { background: white; border-radius: 8px; padding: 20px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .unit-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(56,189,248,0.2); }
+    .unit-card-header { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 15px; }
+    .unit-card-icon { font-size: 32px; }
+    .unit-card-meta { flex: 1; }
+    .unit-card-title { font-weight: bold; font-size: 16px; margin-bottom: 4px; }
+    .unit-card-cc { font-size: 12px; color: #666; }
+    .unit-card-desc { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.4; }
+    .unit-card-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { background: #f0f0f0; padding: 4px 10px; border-radius: 16px; font-size: 11px; }
+    .lesson-content h2 { margin: 20px 0 10px 0; color: #1B3A8A; }
+    .lesson-content h3 { margin: 16px 0 8px; color: #1B3A8A; font-size: 1.05rem; }
+    .lesson-content p { margin-bottom: 12px; line-height: 1.6; }
+    .lesson-content ul, .lesson-content ol { margin-left: 20px; margin-bottom: 12px; }
+    .lesson-content li { margin-bottom: 8px; }
+    .btn { display: inline-block; padding: 10px 20px; background: #1B3A8A; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; margin: 5px; }
+    .btn:hover { background: #162E70; }
+    .btn-secondary { background: #6b7280; }
+    .btn-secondary:hover { background: #4b5563; }
+    .btn-ixl { display: inline-block; padding: 10px 15px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; margin: 5px 5px 5px 0; font-size: 13px; }
+    .btn-ixl:hover { background: #2563eb; }
+    .btn-yt { display: inline-block; padding: 10px 15px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; margin: 5px 5px 5px 0; font-size: 13px; }
+    .btn-yt:hover { background: #dc2626; }
+    .resource-card { background: #f3f4f6; border-radius: 8px; padding: 15px; margin: 20px 0; }
+    .resource-card h3 { margin-bottom: 10px; color: #1B3A8A; font-size: 14px; }
+    .resource-btns { display: flex; flex-wrap: wrap; }
+    .problem { background: white; padding: 15px; margin: 12px 0; border-left: 4px solid #1B3A8A; border-radius: 4px; }
+    .problem h4 { margin-bottom: 8px; color: #1B3A8A; }
+    .problem input, .problem textarea { width: 100%; padding: 8px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; font-family: 'Courier New', monospace; }
+    .answer-key { background: #fef3c7; padding: 10px; margin: 8px 0; border-radius: 4px; font-size: 13px; }
+    .quiz-question { background: white; padding: 15px; margin: 15px 0; border-radius: 4px; border-left: 4px solid #1B3A8A; }
+    .quiz-question h4 { margin-bottom: 10px; color: #1B3A8A; }
+    .quiz-question label { display: block; margin: 8px 0; cursor: pointer; }
+    .quiz-question input[type="radio"] { margin-right: 8px; }
+    .result-card { background: #fef3c7; padding: 20px; border-radius: 8px; margin: 15px 0; }
+    .result-card h3 { color: #059669; margin-bottom: 10px; }
+    .nav-buttons { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+    .back-btn { background: #6b7280; }
+    .back-btn:hover { background: #4b5563; }
+
+    .handout-card { background: #fff; border-left: 5px solid #B8860B; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    .handout-card h3 { margin: 0 0 8px; color: #B8860B; font-size: 1.2rem; }
+    .handout-science { font-size: 0.9rem; color: #666; margin-bottom: 12px; }
+    .handout-mission { background: #f8f9ff; border-radius: 6px; padding: 12px; margin-bottom: 16px; font-style: italic; color: #334; }
+    .handout-steps { margin: 0 0 16px; padding-left: 0; list-style: none; counter-reset: step-counter; }
+    .handout-steps li { counter-increment: step-counter; padding: 8px 12px 8px 44px; margin-bottom: 6px; background: #f0f4ff; border-radius: 6px; position: relative; font-size: 0.92rem; line-height: 1.5; }
+    .handout-steps li::before { content: counter(step-counter); position: absolute; left: 10px; top: 8px; width: 22px; height: 22px; background: #B8860B; color: #fff; border-radius: 50%; font-size: 0.78rem; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+    .handout-deliverable { background: #fffbe6; border: 1px solid #f5d000; border-radius: 6px; padding: 12px; margin-bottom: 16px; }
+    .handout-deliverable strong { display: block; margin-bottom: 4px; color: #7a5f00; }
+    .handout-reflect { background: #fffbea; border: 1px solid #68d391; border-radius: 6px; padding: 12px; }
+    .handout-reflect strong { display: block; margin-bottom: 4px; color: #276749; }
+    .handout-reflect ol { margin: 0; padding-left: 20px; }
+    .handout-reflect li { margin-bottom: 6px; font-size: 0.9rem; }
+    code { background: #e8edf5; padding: 1px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.88em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h2 style="margin:0 0 4px 0;">Saint Theresa School</h2><p style="margin:0 0 16px 0;color:#888;font-size:14px;">Kindergarten Math Topics</p>
+      <div id="sidebar-content"></div>
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #444; font-size: 12px; color: #999;">
+        Progress: <span id="progress-text">0/11</span>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <a href="STS Math Index.html" class="all-math-btn" title="Back to STS home">&larr; All Math</a><button class="home-btn" onclick="showHome()">🏠 HOME</button>
+        <span style="font-size:12px;font-weight:normal;opacity:0.85;margin-right:10px;">Saint Theresa School &nbsp;&nbsp;</span><span id="topbar-title">Numbers, Shapes &amp; Everyday Math</span>
+        <div class="topbar-right">
+          <img src="sts-seal.jpg" style="height:44px;width:44px;border-radius:50%;object-fit:cover;background:#FFD100;" alt="Saint Theresa School Seal"/>
+        </div>
+      </div>
+      <div class="content">
+        <div id="home-screen" class="screen active">
+          <div id="units-grid" class="units-grid"></div>
+        </div>
+        <div id="lesson-screen" class="screen">
+          <button class="btn back-btn" onclick="showHome()">← Back to Units</button>
+          <div id="lesson-content" class="lesson-content"></div>
+          <div class="nav-buttons">
+            <button class="btn back-btn" onclick="showHome()">← Back</button>
+            <button class="btn" onclick="showHandout()">🌺 Real-World Math</button>
+            <button class="btn" onclick="showWorksheet()">Worksheet →</button>
+          </div>
+        </div>
+        <div id="worksheet-screen" class="screen">
+          <button class="btn back-btn" onclick="showLesson(currentUnit)">← Back to Lesson</button>
+          <h2 style="margin: 20px 0;">📋 Worksheet</h2>
+          <div id="worksheet-content"></div>
+          <div class="nav-buttons">
+            <button class="btn back-btn" onclick="showLesson(currentUnit)">← Back</button>
+            <button class="btn" onclick="checkWorksheet()">Check Answers</button>
+            <button class="btn" onclick="showQuiz()">Quiz →</button>
+          </div>
+        </div>
+        <div id="handout-screen" class="screen">
+          <button class="btn back-btn" onclick="showLesson(currentUnit)">← Back to Lesson</button>
+          <h2 style="margin: 20px 0;">🌺 Real-World Math</h2>
+          <div id="handout-content"></div>
+          <div class="nav-buttons">
+            <button class="btn back-btn" onclick="showLesson(currentUnit)">← Back to Lesson</button>
+            <button class="btn" onclick="showWorksheet()">Worksheet →</button>
+          </div>
+        </div>
+        <div id="quiz-screen" class="screen">
+          <button class="btn back-btn" onclick="showWorksheet()">← Back to Worksheet</button>
+          <h2 style="margin: 20px 0;">📝 Quick Quiz</h2>
+          <div id="quiz-content"></div>
+          <div class="nav-buttons">
+            <button class="btn back-btn" onclick="showWorksheet()">← Back</button>
+            <button class="btn" onclick="submitQuiz()">Submit Quiz</button>
+          </div>
+        </div>
+        <div id="certificate-screen" class="screen">
+          <div style="text-align: center; padding: 40px;">
+            <h2 style="color: #1B3A8A; margin: 20px 0;">🎉 Unit Completed!</h2>
+            <div id="cert-content"></div>
+            <button class="btn" onclick="showHome()" style="margin-top: 20px;">Return to Home</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+const UNITS = [
+  { id: "learning-numbers", title: "Learning Numbers", icon: "🔢", cc: "K.CC.3",
+    desc: "Recognize, name, and write the numbers 0–20.",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/learn-to-count-to-10",
+    ytSearch: "khan academy kindergarten counting numbers 1 to 20" },
+  { id: "counting", title: "Counting", icon: "👆", cc: "K.CC.1",
+    desc: "Count groups of objects up to 20 — touch each thing once.",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/count-pictures-up-to-20",
+    ytSearch: "khan academy kindergarten counting objects" },
+  { id: "odd-even", title: "Odd / Even Numbers", icon: "🍎", cc: "K.OA.3",
+    desc: "Tell which numbers are odd (can't pair up) and which are even (pair up).",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/even-or-odd",
+    ytSearch: "khan academy odd even numbers kindergarten" },
+  { id: "ordinal-numbers", title: "Ordinal Numbers", icon: "🥇", cc: "K.CC.4",
+    desc: "Use first, second, third, … to put things in order.",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/ordinal-numbers-up-to-fifth",
+    ytSearch: "khan academy kindergarten ordinal numbers first second third" },
+  { id: "more-less", title: "More / Less", icon: "⚖️", cc: "K.CC.6",
+    desc: "Look at two groups and tell which has more, less, or the same.",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/fewer-and-more-compare-by-counting",
+    ytSearch: "khan academy kindergarten more or less compare" },
+  { id: "patterns", title: "Patterns", icon: "🧩", cc: "K.OA (HI)",
+    desc: "Find and continue patterns like A–B–A–B and A–B–C–A–B–C.",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/complete-a-pattern",
+    ytSearch: "khan academy kindergarten patterns AB ABC" },
+  { id: "measurement", title: "Measurement", icon: "📏", cc: "K.MD.2",
+    desc: "Compare which is longer, taller, heavier, or holds more.",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/measure-using-objects",
+    ytSearch: "khan academy kindergarten measurement longer shorter" },
+  { id: "money", title: "Money", icon: "💰", cc: "K.MD (HI)",
+    desc: "Recognize pennies, nickels, dimes, and quarters and their values.",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/count-money-pennies-through-dimes",
+    ytSearch: "khan academy kindergarten coins identify money" },
+  { id: "graphing", title: "Graphing", icon: "📊", cc: "K.MD.3",
+    desc: "Sort objects into groups and read simple picture graphs.",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/interpret-picture-graphs",
+    ytSearch: "khan academy kindergarten picture graph sort" },
+  { id: "addition", title: "Addition", icon: "➕", cc: "K.OA.1",
+    desc: "Put together two small groups and count how many in all (up to 10).",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/add-with-pictures-sums-up-to-10",
+    ytSearch: "khan academy kindergarten addition within 10" },
+  { id: "subtraction", title: "Subtraction", icon: "➖", cc: "K.OA.1",
+    desc: "Take some away from a group and count how many are left (within 10).",
+    ixlUrl: "https://www.ixl.com/math/kindergarten/subtract-with-pictures-numbers-up-to-10",
+    ytSearch: "khan academy kindergarten subtraction take away" }
+];
+
+const LESSONS = {
+  "learning-numbers": "<h2>Learning Numbers</h2><p>Numbers are special <strong>words and shapes</strong> we use to count. We start at <strong>0</strong> (zero — nothing) and go up: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.</p><h3>Numbers 0–10</h3><p>Each number has a name and a shape (called a <em>numeral</em>):</p><ul><li>0 — zero (nothing)</li><li>1 — one ✋ (one finger)</li><li>2 — two ✌️</li><li>3 — three</li><li>4 — four</li><li>5 — five (a whole hand!)</li><li>6, 7, 8, 9, 10 — keep going!</li></ul><h3>Numbers 11–20</h3><p>After 10 comes <strong>11, 12, 13, 14, 15, 16, 17, 18, 19, 20</strong>. The word \"teen\" sounds like \"ten\" — that's because the teens come right after 10.</p><h3>Writing Numbers</h3><p>Practice tracing each number. Some are easy (1, 7) and some have curves (2, 3, 8). Go slow and stay between the lines.</p>",
+
+  "counting": "<h2>Counting</h2><p>To <strong>count</strong>, you say one number for each thing — and only one!</p><h3>The Three Rules of Counting</h3><ol><li><strong>Start at 1.</strong> Always begin with 1.</li><li><strong>One number per thing.</strong> Touch each object as you say a number — don't skip and don't repeat.</li><li><strong>Last number = total.</strong> The very last number you say is how many there are.</li></ol><h3>Try It</h3><p>Look at: 🐠 🐠 🐠 🐠</p><p>Touch each fish: \"one, two, three, four.\" The last number is <strong>4</strong>, so there are 4 fish.</p><h3>Counting Tips</h3><ul><li>Line things up in a row — easier to keep track.</li><li>Move each thing to a new pile as you count.</li><li>If you lose count, start over. That's okay!</li></ul>",
+
+  "odd-even": "<h2>Odd / Even Numbers</h2><p>Every number is <strong>even</strong> or <strong>odd</strong>.</p><h3>Even Numbers</h3><p><strong>Even</strong> means you can split a group into <em>pairs of 2</em> with nothing left over.</p><ul><li>2 = 🍎🍎 → 1 pair ✓ even</li><li>4 = 🍎🍎 🍎🍎 → 2 pairs ✓ even</li><li>6, 8, 10 are also even.</li></ul><h3>Odd Numbers</h3><p><strong>Odd</strong> means there is <em>one left over</em> when you make pairs.</p><ul><li>3 = 🍎🍎 🍎 → 1 pair + 1 extra ✓ odd</li><li>5 = 🍎🍎 🍎🍎 🍎 → 2 pairs + 1 extra ✓ odd</li><li>7, 9 are also odd.</li></ul><h3>Easy Trick</h3><p>Look at the <strong>last digit</strong>:</p><ul><li>Ends in 0, 2, 4, 6, 8 → <strong>even</strong></li><li>Ends in 1, 3, 5, 7, 9 → <strong>odd</strong></li></ul>",
+
+  "ordinal-numbers": "<h2>Ordinal Numbers</h2><p>Ordinal numbers tell us the <strong>order</strong> things are in — who is first, second, third, and so on.</p><h3>The Words</h3><ul><li>1st — <strong>first</strong></li><li>2nd — <strong>second</strong></li><li>3rd — <strong>third</strong></li><li>4th — <strong>fourth</strong></li><li>5th — <strong>fifth</strong></li><li>6th — sixth, 7th — seventh, 8th — eighth, 9th — ninth, 10th — tenth</li></ul><h3>Where We Use Them</h3><ul><li>In a race: who finished <strong>1st</strong>? Who was <strong>2nd</strong>?</li><li>In line: you can be the <strong>3rd</strong> person in the lunch line.</li><li>On the calendar: the <strong>1st</strong> day of the month.</li></ul><h3>Tip</h3><p>Ordinal numbers ALWAYS go with a direction (start to end). If you change which end you start at, the order flips!</p>",
+
+  "more-less": "<h2>More / Less</h2><p>When you have two groups, you can compare them.</p><h3>More</h3><p><strong>More</strong> means a bigger amount — the group with more things.</p><p>🐠🐠🐠🐠🐠 (5 fish) &nbsp;vs.&nbsp; 🐠🐠 (2 fish)</p><p>5 is <strong>more than</strong> 2.</p><h3>Less (Fewer)</h3><p><strong>Less</strong> (or fewer) means a smaller amount.</p><p>2 is <strong>less than</strong> 5.</p><h3>The Same / Equal</h3><p>If both groups have the same amount, they are <strong>equal</strong>.</p><p>🍎🍎🍎 = 🍌🍌🍌 → both have 3.</p><h3>How to Compare</h3><ol><li>Count each group.</li><li>The bigger number is <em>more</em>; the smaller number is <em>less</em>.</li><li>If they match, they are <em>equal</em>.</li></ol><h3>Match-Up Trick</h3><p>If you can't count yet, line up the two groups one-to-one. The group with leftovers is the bigger group.</p>",
+
+  "patterns": "<h2>Patterns</h2><p>A <strong>pattern</strong> is something that <em>repeats</em> in the same way over and over.</p><h3>AB Patterns</h3><p>Two things, switching back and forth:</p><p>🔴 🔵 🔴 🔵 🔴 🔵 …</p><p>That's a red-blue-red-blue pattern, also called an <strong>A–B</strong> pattern.</p><h3>ABC Patterns</h3><p>Three things in order, repeating:</p><p>🍎 🍌 🍇 🍎 🍌 🍇 …</p><p>That's an <strong>A–B–C</strong> pattern (apple, banana, grape).</p><h3>AABB Patterns</h3><p>You can also have patterns like: 👏 👏 🦶 🦶 👏 👏 🦶 🦶 (clap-clap-stomp-stomp).</p><h3>Find the Missing Piece</h3><p>If the pattern is: 🔺 ⬛ 🔺 ⬛ 🔺 ___ → what comes next?</p><p>Answer: ⬛ (square), because the pattern keeps switching.</p>",
+
+  "measurement": "<h2>Measurement</h2><p>We measure to find out <strong>how long, how tall, how heavy</strong>, or <strong>how much</strong>.</p><h3>Length</h3><p><strong>Length</strong> is how long something is. We say it is <em>longer</em> or <em>shorter</em>.</p><p>A snake is <strong>longer</strong> than a worm. A worm is <strong>shorter</strong> than a snake.</p><h3>Height</h3><p><strong>Height</strong> is how tall something is — up and down.</p><p>An adult is <strong>taller</strong> than a kid. A kid is <strong>shorter</strong> than an adult.</p><h3>Weight</h3><p><strong>Weight</strong> is how heavy something feels when you pick it up.</p><p>A rock is <strong>heavier</strong> than a feather. A feather is <strong>lighter</strong> than a rock.</p><h3>Capacity</h3><p><strong>Capacity</strong> is how much something holds.</p><p>A big bucket holds <strong>more</strong> water than a small cup.</p><h3>Comparing</h3><p>Put two things side-by-side. The bigger / longer / heavier one is the one that goes farther, sticks up more, or tips the scale down.</p>",
+
+  "money": "<h2>Money</h2><p>We use <strong>coins</strong> to buy things. There are 4 main coins to learn.</p><h3>The Four Coins</h3><ul><li><strong>Penny</strong> 🪙 — worth <strong>1¢</strong> (one cent). It is brown.</li><li><strong>Nickel</strong> — worth <strong>5¢</strong> (five cents). It is silver and thick.</li><li><strong>Dime</strong> — worth <strong>10¢</strong> (ten cents). It is silver, small, and thin.</li><li><strong>Quarter</strong> — worth <strong>25¢</strong> (twenty-five cents). It is silver and the biggest.</li></ul><h3>Cents Sign</h3><p>The little symbol <strong>¢</strong> means \"cents.\" So 5¢ means 5 cents.</p><h3>Match the Coin</h3><p>A nickel and a penny look almost the same color, but the nickel is bigger and thicker.</p><h3>Big Idea</h3><p>A dime is <strong>smaller</strong> than a nickel but worth <strong>more</strong>. Don't judge a coin by its size!</p>",
+
+  "graphing": "<h2>Graphing</h2><p>A <strong>graph</strong> is a picture that helps us see how many of each thing.</p><h3>Sorting</h3><p>First, we <strong>sort</strong> — put things into groups by color, shape, or kind.</p><p>Example: red apples in one pile, green apples in another, yellow bananas in a third.</p><h3>Picture Graphs</h3><p>A picture graph shows one little drawing for each thing counted:</p><pre style=\"font-family:'Segoe UI';font-size:1.1em;line-height:1.5;\">🍎🍎🍎🍎  (4 apples)\n🍌🍌🍌    (3 bananas)\n🍇🍇       (2 grapes)</pre><p>The longest row has the <strong>most</strong>. The shortest row has the <strong>least</strong>.</p><h3>Reading a Graph</h3><p>To read a graph, ask:</p><ul><li><strong>How many</strong> of each thing?</li><li><strong>Which has the most?</strong></li><li><strong>Which has the least?</strong></li></ul>",
+
+  "addition": "<h2>Addition</h2><p>Addition means <strong>putting two groups together</strong> to make one bigger group.</p><h3>The Plus Sign +</h3><p>The symbol <strong>+</strong> means \"add\" or \"put together.\" The symbol <strong>=</strong> means \"equals\" or \"the same as.\"</p><p>So <strong>2 + 3 = 5</strong> means: 2 things and 3 more things make 5 things.</p><h3>Ways to Add</h3><ul><li><strong>Use your fingers:</strong> hold up 2 fingers, then 3 more. Count them all → 5.</li><li><strong>Use objects:</strong> 2 blocks + 3 blocks = 5 blocks.</li><li><strong>Count up:</strong> Start at 2 and count: \"3, 4, 5.\" That's 3 more → land on 5.</li></ul><h3>Special Rules</h3><ul><li>Any number + 0 stays the same. 4 + 0 = 4.</li><li>You can switch the order: 2 + 3 is the same as 3 + 2 = 5.</li></ul>",
+
+  "subtraction": "<h2>Subtraction</h2><p>Subtraction means <strong>taking some away</strong>. We start with a group and remove some — then count what's left.</p><h3>The Minus Sign −</h3><p>The symbol <strong>−</strong> means \"minus\" or \"take away.\"</p><p>So <strong>5 − 2 = 3</strong> means: start with 5 things, take 2 away, and 3 are left.</p><h3>Ways to Subtract</h3><ul><li><strong>Cross-out trick:</strong> draw 5 circles, cross out 2, count what's left.</li><li><strong>Fingers:</strong> hold up 5 fingers, fold 2 down, count what's up → 3.</li><li><strong>Count back:</strong> Start at 5, count backward 2 steps: \"4, 3\" → answer is 3.</li></ul><h3>Special Rules</h3><ul><li>Any number minus 0 stays the same. 7 − 0 = 7.</li><li>Any number minus itself is 0. 5 − 5 = 0.</li><li>You can NOT switch the order! 5 − 2 is different from 2 − 5.</li></ul>"
+};
+
+const WORKSHEETS = {
+  "learning-numbers": [
+    { q: "Write the number that comes after 4: 1, 2, 3, 4, ___", answer: "5" },
+    { q: "What number is shown? 🐠🐠🐠", answer: "3" },
+    { q: "Write the missing number: 7, 8, ___, 10", answer: "9" },
+    { q: "How many fingers are on TWO hands?", answer: "10" },
+    { q: "Write the number that comes before 15.", answer: "14" }
+  ],
+  "counting": [
+    { q: "Count the dots: • • • • • • → how many?", answer: "6" },
+    { q: "Count by 1s: 1, 2, 3, 4, ___, 6", answer: "5" },
+    { q: "Touch and count: 🦋 🦋 🦋 🦋 🦋 🦋 🦋", answer: "7" },
+    { q: "Count: 11, 12, 13, ___, 15", answer: "14" },
+    { q: "If you count 8 toys and then 1 more, how many in all?", answer: "9" }
+  ],
+  "odd-even": [
+    { q: "Is 4 odd or even?", answer: "even" },
+    { q: "Is 7 odd or even?", answer: "odd" },
+    { q: "Is 10 odd or even?", answer: "even" },
+    { q: "Make pairs of 2: 5 things. Is 5 odd or even?", answer: "odd (1 left over)" },
+    { q: "Numbers that end in 2 are always…", answer: "even" }
+  ],
+  "ordinal-numbers": [
+    { q: "Who finishes first in a 1st place? (number)", answer: "1st" },
+    { q: "In line: 🐶 🐱 🐰 🐭 — which animal is 3rd?", answer: "rabbit (🐰)" },
+    { q: "Write the word for 2nd.", answer: "second" },
+    { q: "What comes after fifth?", answer: "sixth" },
+    { q: "If you are 4th in line, how many people are in front of you?", answer: "3" }
+  ],
+  "more-less": [
+    { q: "Which is MORE: 5 stars or 9 stars?", answer: "9 stars" },
+    { q: "Which is LESS: 3 dogs or 7 dogs?", answer: "3 dogs" },
+    { q: "Are 4 and 4 equal or different?", answer: "equal" },
+    { q: "🐠🐠🐠 vs 🐠🐠🐠🐠🐠 — which has more?", answer: "the second group (5)" },
+    { q: "What number is one LESS than 8?", answer: "7" }
+  ],
+  "patterns": [
+    { q: "What comes next? 🔴🔵🔴🔵🔴 ___", answer: "🔵 (blue)" },
+    { q: "What comes next? 🍎🍌🍎🍌 ___", answer: "🍎 (apple)" },
+    { q: "Type of pattern: A B A B A B", answer: "AB pattern" },
+    { q: "Find the missing piece: ⬛ ⬜ ⬛ ⬜ ⬛ ___", answer: "⬜ (white square)" },
+    { q: "What comes next? 1, 2, 3, 1, 2, 3, 1, ___", answer: "2" }
+  ],
+  "measurement": [
+    { q: "Which is LONGER: a pencil or a school bus?", answer: "school bus" },
+    { q: "Which is TALLER: a teacher or a baby?", answer: "the teacher" },
+    { q: "Which is HEAVIER: a feather or a brick?", answer: "the brick" },
+    { q: "Which holds MORE water: a teaspoon or a big bucket?", answer: "the big bucket" },
+    { q: "If two pencils are the same size, are they equal in length?", answer: "yes" }
+  ],
+  "money": [
+    { q: "What is a penny worth?", answer: "1¢ (1 cent)" },
+    { q: "What is a nickel worth?", answer: "5¢ (5 cents)" },
+    { q: "What is a dime worth?", answer: "10¢ (10 cents)" },
+    { q: "What is a quarter worth?", answer: "25¢ (25 cents)" },
+    { q: "Which coin is the BIGGEST in size?", answer: "the quarter" }
+  ],
+  "graphing": [
+    { q: "Sort by color — group: 🍎🍅🍓 — what color are they all?", answer: "red" },
+    { q: "In a picture graph, the LONGEST row means…", answer: "the most" },
+    { q: "Picture graph: 🐶🐶🐶  /  🐱🐱  — which has more?", answer: "dogs (🐶)" },
+    { q: "How many fewer cats than dogs in the question above?", answer: "1 (3 − 2 = 1)" },
+    { q: "Picture graph: 🍦🍦🍦🍦  /  🍪🍪 — which has the LEAST?", answer: "cookies (🍪)" }
+  ],
+  "addition": [
+    { q: "2 + 1 = ?", answer: "3" },
+    { q: "3 + 4 = ?", answer: "7" },
+    { q: "5 + 5 = ?", answer: "10" },
+    { q: "6 + 0 = ?", answer: "6" },
+    { q: "If you have 4 candies and get 3 more, how many?", answer: "7" },
+    { q: "2 + 6 = ?", answer: "8" }
+  ],
+  "subtraction": [
+    { q: "5 − 2 = ?", answer: "3" },
+    { q: "8 − 3 = ?", answer: "5" },
+    { q: "10 − 5 = ?", answer: "5" },
+    { q: "7 − 0 = ?", answer: "7" },
+    { q: "If you have 9 grapes and eat 4, how many are left?", answer: "5" },
+    { q: "6 − 6 = ?", answer: "0" }
+  ]
+};
+
+const HANDOUTS = {
+  "learning-numbers": { science: "Number Hunt at Home", mission: "Find numbers all around your house.", steps: ["With a grown-up, walk through your house.", "Find a number on the clock. Say it out loud.", "Find a number on the microwave or oven.", "Find a number on a book cover or page.", "Find a number on the mailbox or front door."], deliverable: "Tell your teacher 5 different places you found numbers.", reflect: ["Where did you find the biggest number?", "Where did you find the smallest number?", "Are there numbers in places you didn't expect?"] },
+
+  "counting": { science: "Counting Shells at the Beach", mission: "Count what you see at the beach.", steps: ["With a grown-up, go to the beach or yard.", "Find a small patch of sand the size of a beach towel.", "Touch each shell as you count: 1, 2, 3…", "Stop when you reach 20 or when you run out of shells.", "Try a different spot and count again."], deliverable: "Tell your teacher: 'I counted ___ shells in spot 1 and ___ shells in spot 2.'", reflect: ["Was it harder when there were lots of shells?", "Did you ever lose count and start over?", "Why do you have to touch each shell only once?"] },
+
+  "odd-even": { science: "Pair Up the Slippers (Slippas)", mission: "Sort shoes into pairs to see odd or even.", steps: ["Find all the slippers and shoes by your front door.", "Try to make pairs — one for the left foot, one for the right foot.", "Count how many pairs you made.", "Are there any shoes left over (with no partner)?", "If no leftovers → even. If 1 left over → odd."], deliverable: "Tell your teacher how many shoes you had and if it was odd or even.", reflect: ["What does 'in pairs' mean?", "Why is 1 always odd?", "What other things at home come in pairs?"] },
+
+  "ordinal-numbers": { science: "The Lūʻau Line", mission: "Use ordinal words at lunch or dinner.", steps: ["Get in line with your family at dinner.", "Who is 1st (first)? Who is 2nd? Who is 3rd?", "Trade places and try again — now the order is different.", "Tell each person their ordinal: 'You are 4th!'", "After everyone gets food, say what number you were in line."], deliverable: "A list of your family in dinner-line order: 1st, 2nd, 3rd, 4th…", reflect: ["Did your spot in line change when you traded?", "What is the difference between 'one' and 'first'?", "When is ordering important in real life?"] },
+
+  "more-less": { science: "Two Bowls of Goldfish", mission: "Compare two snack groups.", steps: ["With a grown-up, get two small bowls.", "Put a few goldfish crackers (or any small snack) in each bowl.", "Don't count yet! Just look — which bowl has MORE?", "Now COUNT each bowl to check.", "Was your guess right? Tell the difference: 'Bowl A has ___ more than Bowl B.'"], deliverable: "Two snack counts and which one had more.", reflect: ["Could you tell which had more without counting?", "Was it easier when the difference was big?", "How can you make the two bowls equal?"] },
+
+  "patterns": { science: "Pattern Walk", mission: "Find patterns around your home.", steps: ["Walk around your house with a grown-up.", "Look at floor tiles — is there a pattern (square-circle, color-color)?", "Look at a shirt or blanket — is there a stripe pattern?", "Look at a fence or window blinds — same shape over and over?", "Draw or take a photo of TWO patterns you find."], deliverable: "Two patterns you found, drawn or photographed.", reflect: ["Why do people make patterns on clothes or floors?", "What was your favorite pattern?", "Can YOU make a pattern with your toys?"] },
+
+  "measurement": { science: "Tall, Short, Heavy, Light", mission: "Compare things at home.", steps: ["With a grown-up, find 4 different objects.", "Pick up each one — which is HEAVIEST? Which is LIGHTEST?", "Stand them up side-by-side — which is TALLEST? Which is SHORTEST?", "Order them from shortest to tallest.", "Order them from lightest to heaviest."], deliverable: "Two orders: a height order and a weight order.", reflect: ["Was the biggest thing always the heaviest? (no!)", "How could you tell what's heavier without picking them up?", "Why do we measure things?"] },
+
+  "money": { science: "Coin Sort", mission: "Sort coins by name.", steps: ["With a grown-up, pour out a small pile of coins on a table.", "Make a pile for pennies (brown, 1¢).", "Make a pile for nickels (silver, thick, 5¢).", "Make a pile for dimes (silver, small, 10¢).", "Make a pile for quarters (silver, big, 25¢)."], deliverable: "Tell your teacher how many of each coin you found.", reflect: ["Which coin did you have the MOST of?", "Which coin did you have the LEAST of?", "Why is the dime smaller but worth more than a nickel?"] },
+
+  "graphing": { science: "Fruit Bowl Graph", mission: "Make a picture graph of the fruit at home.", steps: ["Look at the fruit in your kitchen.", "Sort the fruit by type (apples, bananas, oranges…).", "On a paper, draw 1 little fruit for each one you see.", "Line them up in rows.", "Which row is the LONGEST? Which is the SHORTEST?"], deliverable: "A drawing of your fruit bowl picture graph.", reflect: ["What does the longest row tell you?", "Were you surprised by what you had the most of?", "How could you sort the fruit a different way?"] },
+
+  "addition": { science: "Mango Math", mission: "Put two groups of fruit together.", steps: ["With a grown-up, get some small fruit (mangoes, grapes, anything).", "Put 3 in one pile.", "Put 4 in another pile.", "Push them together. How many in all? Count!", "Try another combination: 2 + 5 = ?"], deliverable: "Two addition stories you solved with real fruit.", reflect: ["Was it easier to count separately or all together?", "What does the '+' sign mean?", "What other things at home can you add up?"] },
+
+  "subtraction": { science: "Cookie Take-Away", mission: "Practice subtraction with snacks.", steps: ["With a grown-up, get a small snack: 7 crackers or grapes.", "Put them all on a plate.", "Eat 2 (yum!). How many are left? Count.", "Eat 3 more. How many now?", "Eat the rest. How many left? (0!)"], deliverable: "Three subtraction stories you 'ate' your way through.", reflect: ["What does the '−' sign mean?", "How is subtraction different from addition?", "Can you ever take away MORE than you started with? Why not?"] }
+};
+
+const QUIZZES = {
+  "learning-numbers": [
+    { q: "What number comes after 6?", opts: ["5", "7", "8"], ans: 1 },
+    { q: "How many is shown: 🐠🐠🐠🐠?", opts: ["3", "4", "5"], ans: 1 },
+    { q: "What number comes before 10?", opts: ["8", "9", "11"], ans: 1 },
+    { q: "Which number is the BIGGEST?", opts: ["3", "7", "5"], ans: 1 }
+  ],
+  "counting": [
+    { q: "Count: 🦋🦋🦋🦋🦋", opts: ["4", "5", "6"], ans: 1 },
+    { q: "What number comes next? 8, 9, ___", opts: ["7", "10", "11"], ans: 1 },
+    { q: "How many fingers on one hand?", opts: ["5", "10", "1"], ans: 0 },
+    { q: "When you count, the last number you say is…", opts: ["the start", "the total", "1"], ans: 1 }
+  ],
+  "odd-even": [
+    { q: "Is 6 odd or even?", opts: ["odd", "even"], ans: 1 },
+    { q: "Is 3 odd or even?", opts: ["odd", "even"], ans: 0 },
+    { q: "Numbers that end in 0, 2, 4, 6, 8 are…", opts: ["odd", "even"], ans: 1 },
+    { q: "Which group is EVEN?", opts: ["5 apples", "8 apples", "7 apples"], ans: 1 }
+  ],
+  "ordinal-numbers": [
+    { q: "Who finishes first?", opts: ["the runner in 2nd place", "the runner in 1st place", "the runner in 3rd place"], ans: 1 },
+    { q: "What is the word for 3rd?", opts: ["three", "third", "thirty"], ans: 1 },
+    { q: "What comes after fourth?", opts: ["fifth", "sixth", "third"], ans: 0 },
+    { q: "If you are 2nd in line, how many people are in front of you?", opts: ["0", "1", "2"], ans: 1 }
+  ],
+  "more-less": [
+    { q: "Which is MORE?", opts: ["3", "8"], ans: 1 },
+    { q: "Which is LESS?", opts: ["6", "2"], ans: 1 },
+    { q: "Are 5 and 5 equal?", opts: ["yes", "no"], ans: 0 },
+    { q: "🐶🐶🐶 or 🐶🐶🐶🐶🐶 — which has more?", opts: ["3 dogs", "5 dogs", "they are equal"], ans: 1 }
+  ],
+  "patterns": [
+    { q: "What comes next? 🔴🔵🔴🔵🔴 ___", opts: ["🔴", "🔵", "🟢"], ans: 1 },
+    { q: "What kind of pattern is A B A B A B?", opts: ["AB pattern", "ABC pattern", "AABB pattern"], ans: 0 },
+    { q: "What comes next? 🍎🍌🍇🍎🍌🍇🍎 ___", opts: ["🍎", "🍌", "🍇"], ans: 1 },
+    { q: "A pattern is something that…", opts: ["happens once", "repeats over and over", "is random"], ans: 1 }
+  ],
+  "measurement": [
+    { q: "Which is TALLER?", opts: ["a kid", "an adult"], ans: 1 },
+    { q: "Which is HEAVIER?", opts: ["a feather", "a brick"], ans: 1 },
+    { q: "Which holds MORE water?", opts: ["a teaspoon", "a big bucket"], ans: 1 },
+    { q: "Which is LONGER?", opts: ["a worm", "a snake"], ans: 1 }
+  ],
+  "money": [
+    { q: "How many cents is a penny?", opts: ["1¢", "5¢", "10¢"], ans: 0 },
+    { q: "How many cents is a nickel?", opts: ["1¢", "5¢", "25¢"], ans: 1 },
+    { q: "How many cents is a dime?", opts: ["10¢", "25¢", "1¢"], ans: 0 },
+    { q: "Which coin is the BIGGEST?", opts: ["penny", "dime", "quarter"], ans: 2 }
+  ],
+  "graphing": [
+    { q: "In a picture graph, the LONGEST row means…", opts: ["the least", "the most", "zero"], ans: 1 },
+    { q: "🐶🐶🐶🐶 vs 🐱🐱 — which has more?", opts: ["dogs", "cats", "equal"], ans: 0 },
+    { q: "First step before making a graph is to…", opts: ["sort", "eat", "color"], ans: 0 },
+    { q: "If apples = 5 and bananas = 2, which has LESS?", opts: ["apples", "bananas"], ans: 1 }
+  ],
+  "addition": [
+    { q: "2 + 3 = ?", opts: ["4", "5", "6"], ans: 1 },
+    { q: "4 + 1 = ?", opts: ["3", "5", "6"], ans: 1 },
+    { q: "5 + 5 = ?", opts: ["8", "9", "10"], ans: 2 },
+    { q: "7 + 0 = ?", opts: ["0", "7", "8"], ans: 1 }
+  ],
+  "subtraction": [
+    { q: "5 − 2 = ?", opts: ["2", "3", "4"], ans: 1 },
+    { q: "9 − 4 = ?", opts: ["4", "5", "6"], ans: 1 },
+    { q: "6 − 6 = ?", opts: ["0", "6", "12"], ans: 0 },
+    { q: "8 − 0 = ?", opts: ["0", "1", "8"], ans: 2 }
+  ]
+};
+
+let completedUnits = {};
+let currentUnit = null;
+
+function resourceCardHTML(unit) {
+  const ixlBtn = unit.ixlUrl ? `<a class="btn-ixl" href="${unit.ixlUrl}" target="_blank">📘 IXL Practice</a>` : '';
+  const ytBtn = `<a class="btn-yt" href="https://www.youtube.com/results?search_query=${encodeURIComponent(unit.ytSearch)}" target="_blank">▶️ YouTube</a>`;
+  return `<div class="resource-card"><h3>📚 Practice & Watch</h3><div class="resource-btns">${ixlBtn}${ytBtn}</div></div>`;
+}
+
+function renderHome() {
+  const grid = document.getElementById('units-grid');
+  grid.innerHTML = '';
+  UNITS.forEach(unit => {
+    const card = document.createElement('div');
+    card.className = 'unit-card';
+    card.onclick = () => showLesson(unit.id);
+    card.innerHTML = `
+      <div class="unit-card-header">
+        <div class="unit-card-icon">${unit.icon}</div>
+        <div class="unit-card-meta">
+          <div class="unit-card-title">${unit.title}${completedUnits[unit.id]?' ✅':''}</div>
+          <div class="unit-card-cc">${unit.cc}</div>
+        </div>
+      </div>
+      <div class="unit-card-desc">${unit.desc}</div>
+      <div class="unit-card-pills">
+        <div class="pill">📖 Lesson</div>
+        ${unit.ixlUrl?'<div class="pill">📘 IXL</div>':''}
+        <div class="pill">🌺 Real-World</div>
+        <div class="pill">📋 Worksheet</div>
+        <div class="pill">▶️ YouTube</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function renderSidebar() {
+  const sidebar = document.getElementById('sidebar-content');
+  sidebar.innerHTML = '';
+  UNITS.forEach((unit, idx) => {
+    const item = document.createElement('div');
+    item.className = 'sidebar-item' + (currentUnit === unit.id ? ' active' : '');
+    item.textContent = `${idx + 1}. ${unit.title}${completedUnits[unit.id]?' ✅':''}`;
+    item.onclick = () => showLesson(unit.id);
+    sidebar.appendChild(item);
+  });
+}
+
+function setTopbar() {
+  document.getElementById('topbar-title').textContent = currentUnit ? UNITS.find(u => u.id === currentUnit).title : 'Numbers, Shapes & Everyday Math';
+}
+
+function updateProgress() {
+  const n = Object.keys(completedUnits).length;
+  document.getElementById('progress-text').textContent = `${n}/${UNITS.length}`;
+}
+
+function showHome() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('home-screen').classList.add('active');
+  currentUnit = null;
+  renderHome();
+  renderSidebar();
+  setTopbar();
+  updateProgress();
+}
+
+function showLesson(unitId) {
+  currentUnit = unitId;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('lesson-screen').classList.add('active');
+  const unit = UNITS.find(u => u.id === unitId);
+  document.getElementById('lesson-content').innerHTML = LESSONS[unitId] + resourceCardHTML(unit);
+  renderSidebar();
+  setTopbar();
+}
+
+function showWorksheet() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('worksheet-screen').classList.add('active');
+  const ws = WORKSHEETS[currentUnit];
+  let html = '';
+  ws.forEach((p, idx) => {
+    html += `<div class="problem"><h4>Problem ${idx + 1}</h4><p>${p.q}</p><textarea id="ans-${idx}" placeholder="Your answer..."></textarea></div>`;
+  });
+  document.getElementById('worksheet-content').innerHTML = html;
+}
+
+function checkWorksheet() {
+  const ws = WORKSHEETS[currentUnit];
+  let html = '';
+  ws.forEach((p, idx) => {
+    const userAns = document.getElementById(`ans-${idx}`).value;
+    html += `<div class="problem"><h4>Problem ${idx + 1}</h4><p>${p.q}</p><div class="answer-key"><strong>Answer:</strong> ${p.answer}</div><p><strong>Your answer:</strong> ${userAns || '(no answer)'}</p></div>`;
+  });
+  document.getElementById('worksheet-content').innerHTML = html;
+}
+
+function showHandout() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('handout-screen').classList.add('active');
+  const h = HANDOUTS[currentUnit];
+  let html = `<div class="handout-card">
+    <h3>${h.science}</h3>
+    <div class="handout-science">A hands-on activity to use today's math at home or in your neighborhood.</div>
+    <div class="handout-mission">🎯 <strong>Mission:</strong> ${h.mission}</div>
+    <strong style="color:#1B3A8A;">Steps:</strong>
+    <ol class="handout-steps">${h.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+    <div class="handout-deliverable"><strong>📦 What to bring back to class:</strong>${h.deliverable}</div>
+    <div class="handout-reflect"><strong>🤔 Reflect:</strong><ol>${h.reflect.map(r => `<li>${r}</li>`).join('')}</ol></div>
+  </div>`;
+  document.getElementById('handout-content').innerHTML = html;
+}
+
+function showQuiz() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('quiz-screen').classList.add('active');
+  const quiz = QUIZZES[currentUnit];
+  let html = `
+    <div style="background:#f0f4ff;padding:14px;border-radius:8px;margin-bottom:15px;border-left:4px solid #1B3A8A;">
+      <label style="display:block;font-weight:600;color:#1B3A8A;margin-bottom:6px;">Student Name:</label>
+      <input type="text" id="student-name" placeholder="Type your full name"
+        style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:14px;" />
+    </div>
+  `;
+  quiz.forEach((q, idx) => {
+    html += `<div class="quiz-question"><h4>Question ${idx + 1}</h4><p>${q.q}</p>`;
+    q.opts.forEach((opt, optIdx) => {
+      html += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${opt}</label>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('quiz-content').innerHTML = html;
+}
+
+// Quiz results stored at the latest submission so the email button can use them.
+let lastQuizResults = null;
+
+function submitQuiz() {
+  const quiz = QUIZZES[currentUnit];
+  const studentName = (document.getElementById('student-name')?.value || '').trim();
+  let score = 0;
+  const breakdown = [];
+  quiz.forEach((q, idx) => {
+    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+    const selectedIdx = selected ? parseInt(selected.value) : -1;
+    const isCorrect = selectedIdx === q.ans;
+    if (isCorrect) score++;
+    breakdown.push({
+      n: idx + 1,
+      question: q.q,
+      studentAnswer: selectedIdx >= 0 ? q.opts[selectedIdx] : '(no answer)',
+      correctAnswer: q.opts[q.ans],
+      correct: isCorrect
+    });
+  });
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('certificate-screen').classList.add('active');
+  const pct = Math.round((score / quiz.length) * 100);
+
+  // Find unit title for display
+  const unitObj = UNITS.find(u => u.id === currentUnit);
+  const unitTitle = unitObj ? unitObj.title : currentUnit;
+
+  lastQuizResults = { studentName, unitTitle, score, total: quiz.length, pct, breakdown };
+
+  const nameLine = studentName
+    ? `<p><strong>Student:</strong> ${studentName}</p>`
+    : `<p style="color:#b91c1c;"><em>Tip: type your name on the quiz screen before submitting so your teacher knows who you are.</em></p>`;
+
+  document.getElementById('cert-content').innerHTML = `
+    <div class="result-card">
+      ${nameLine}
+      <p><strong>Unit:</strong> ${unitTitle}</p>
+      <h3>Score: ${score} out of ${quiz.length} (${pct}%)</h3>
+      <p>${pct === 100 ? "Perfect! 🌟" : pct >= 67 ? "Nice work! Keep practicing." : "Good try! Review the lesson and try again."}</p>
+      <div style="margin-top:18px;">
+        <button class="btn" onclick="emailResults()" style="background:#1B3A8A;color:white;padding:10px 18px;font-size:14px;border:none;border-radius:6px;cursor:pointer;">
+          📧 Send Results to Mrs. Finau
+        </button>
+      </div>
+      <p style="margin-top:10px;font-size:12px;color:#666;">
+        Tapping the button opens your email app with the score and answers filled in. Just press Send.
+      </p>
+    </div>
+  `;
+  if (pct >= 67) completedUnits[currentUnit] = true;
+  updateProgress();
+}
+
+function emailResults() {
+  if (!lastQuizResults) return;
+  const r = lastQuizResults;
+  const lines = [];
+  lines.push(`Aloha Mrs. Finau,`);
+  lines.push(``);
+  lines.push(`A Kindergarten math quiz was just submitted.`);
+  lines.push(``);
+  lines.push(`Student: ${r.studentName || '(name not provided)'}`);
+  lines.push(`Unit: ${r.unitTitle}`);
+  lines.push(`Score: ${r.score} out of ${r.total} (${r.pct}%)`);
+  lines.push(``);
+  lines.push(`--- Detailed Answers ---`);
+  r.breakdown.forEach(b => {
+    lines.push(``);
+    lines.push(`Q${b.n}. ${b.question}`);
+    lines.push(`   Student's answer: ${b.studentAnswer}`);
+    lines.push(`   Correct answer:   ${b.correctAnswer}`);
+    lines.push(`   ${b.correct ? '✓ Correct' : '✗ Incorrect'}`);
+  });
+  lines.push(``);
+  lines.push(`Mahalo,`);
+  lines.push(`Saint Theresa School — Kindergarten Math`);
+
+  const subject = `Kindergarten Math Quiz Result — ${r.studentName || 'Student'} — ${r.unitTitle} — ${r.pct}%`;
+  const body = lines.join('\n');
+  const to = 'tauhatafe@rcchawaii.org';
+
+  // Open Gmail's compose window directly (uses whichever Gmail account is logged in,
+  // typically the student's @stshi.org account). Opens in a new tab so they don't
+  // lose their place on the math page.
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1`
+    + `&to=${encodeURIComponent(to)}`
+    + `&su=${encodeURIComponent(subject)}`
+    + `&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl, '_blank');
+}
+
+// Initial render
+showHome();
+  </script>
+</body>
+</html>
